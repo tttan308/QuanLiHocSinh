@@ -1,0 +1,55 @@
+package view;
+
+import function.StudentList;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+
+public class StudentTablePanel {
+    private JPanel studentTable;
+    private JTable table;
+    private String[] columnNames = {"Mã học sinh", "Họ tên", "Điểm", "Địa chỉ", "Ghi chú", "Ảnh"};
+    private DefaultTableModel tableModel;
+    private StudentList stuList = new StudentList();
+    public StudentTablePanel(){
+        studentTable = new JPanel(new BorderLayout());
+
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 5) {
+                    return ImageIcon.class;
+                }
+                return super.getColumnClass(columnIndex);
+            }
+        };
+
+        table = new JTable(tableModel);
+        table.setRowHeight(150);
+        table.getColumnModel().getColumn(0).setPreferredWidth(80);
+        table.getColumnModel().getColumn(1).setPreferredWidth(150);
+        table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        table.getColumnModel().getColumn(3).setPreferredWidth(200);
+        table.getColumnModel().getColumn(4).setPreferredWidth(200);
+        table.getColumnModel().getColumn(5).setPreferredWidth(200);
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(0, 200, 880, 200);
+        studentTable.add(scrollPane, BorderLayout.CENTER);
+    }
+    public static JPanel getStudentTablePanel(){
+        return new StudentTablePanel().studentTable;
+    }
+    public static DefaultTableModel getTableModel(){
+        return new StudentTablePanel().tableModel;
+    }
+
+
+
+
+}
