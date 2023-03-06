@@ -11,8 +11,8 @@ public class StudentTablePanel {
     private JPanel studentTable;
     private JTable table;
     private String[] columnNames = {"Mã học sinh", "Họ tên", "Điểm", "Địa chỉ", "Ghi chú", "Ảnh"};
-    private DefaultTableModel tableModel;
-    private StudentList stuList = new StudentList();
+    public static DefaultTableModel tableModel;
+    public static StudentList stuList = new StudentList();
     public StudentTablePanel(){
         studentTable = new JPanel(new BorderLayout());
 
@@ -45,11 +45,5 @@ public class StudentTablePanel {
     public static JPanel getStudentTablePanel(){
         return new StudentTablePanel().studentTable;
     }
-    public static DefaultTableModel getTableModel(){
-        return new StudentTablePanel().tableModel;
-    }
-
-
-
 
 }

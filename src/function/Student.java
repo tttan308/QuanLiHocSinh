@@ -28,26 +28,50 @@ public class Student {
         this.note = _note;
     }
 
-    public String getid(){
+    public String getId(){
         return this.id;
     }
 
-    public String getname(){
+    public String getName(){
         return this.name;
     }
 
-    public float getgrade(){
+    public float getGrade(){
         return this.grade;
     }
 
-    public ImageIcon getimg(){
+    public ImageIcon getImg(){
         return this.img;
     }
-    public String getaddress() {
+    public String getAddress() {
         return this.address;
     }
 
-    public String getnote() {
+    public String getNote() {
         return this.note;
+    }
+
+    public void setId(String _id){
+        this.id = _id;
+    }
+
+    public void setName(String _name){
+        this.name = _name;
+    }
+
+    public void setGrade(float _grade){
+        this.grade = _grade;
+    }
+
+    public void setImg(ImageIcon _img){
+        this.img = _img;
+    }
+
+    public void setAddress(String _address){
+        this.address = _address;
+    }
+
+    public void setNote(String _note){
+        this.note = _note;
     }
 }
