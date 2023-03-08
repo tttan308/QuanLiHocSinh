@@ -1,10 +1,12 @@
 package view;
+import function.FileHandle;
 import function.Student;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 
 import static view.StudentTablePanel.stuList;
 
@@ -66,13 +68,47 @@ public class MenuToolbarPanel {
 
         JMenu fileMenu = new JMenu("File");
         JMenuItem openMenuItem = new JMenuItem("Import File");
-
         JMenuItem saveMenuItem = new JMenuItem("Export File");
         fileMenu.add(openMenuItem);
         fileMenu.addSeparator();
         fileMenu.add(saveMenuItem);
         toolbar.add(fileMenu);
         toolbar.add(Box.createHorizontalStrut(10));
+        //Handle
+        openMenuItem.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn file");
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            int userSelection = fileChooser.showOpenDialog(null);
+            if(userSelection == JFileChooser.APPROVE_OPTION){
+                File fileToOpen = fileChooser.getSelectedFile();
+                try{
+                    //clear stuList
+                    stuList.clearStudentList();
+                    stuList = FileHandle.importCSV(fileToOpen.getAbsolutePath());
+                    StudentTablePanel.reloadTable();
+                }
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "File không đúng định dạng!");
+                    throw new RuntimeException(ex);
+                }
+            }
+
+        });
+        saveMenuItem.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Đặt tên file");
+            int userSelection = fileChooser.showSaveDialog(null);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                try {
+                    FileHandle.exportCSV(fileToSave.getAbsolutePath() + ".csv", stuList);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Tên file đã tồn tại!");
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
         JMenu viewMenu = new JMenu("Xem danh sách học sinh");
         JMenuItem idSort1 = new JMenuItem("Sắp xếp theo mã học sinh tăng dần");

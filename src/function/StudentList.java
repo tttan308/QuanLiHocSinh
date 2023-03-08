@@ -1,7 +1,10 @@
 package function;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class StudentList {
@@ -138,5 +141,7 @@ public class StudentList {
         }
     }
 
-
+    public void clearStudentList(){
+        list.clear();
+    }
 }
