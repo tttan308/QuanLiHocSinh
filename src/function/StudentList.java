@@ -11,7 +11,7 @@ public class StudentList {
         list = new ArrayList<>();
     }
 
-    private int checkExists(Student stu) {
+    public int checkExists(Student stu) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getId().equals(stu.getId())) {
                 return i;
@@ -20,6 +20,14 @@ public class StudentList {
         return -1;
     }
 
+    public boolean checkExists(String id){
+        for(int i = 0; i < list.size(); i++){
+            if(list.get(i).getId().equals(id)){
+                return true;
+            }
+        }
+        return false;
+    }
     public void addStudent(Student stu) {
         if (checkExists(stu) == -1) {
             list.add(stu);
@@ -31,22 +39,21 @@ public class StudentList {
 
     public void addStudent(String id, String name, float grade, ImageIcon img, String address, String note){
         if(checkExists(new Student(id, name, grade, img, address, note)) != -1){
-            throw new IllegalArgumentException("Student already exists");
+            throw new IllegalArgumentException("Học sinh đã tồn tại");
         }
         list.add(new Student(id, name, grade, img, address, note));
     }
 
-    public void editStudent(String id, String name, float grade, ImageIcon img, String address, String note){
-        int index = checkExists(new Student(id, name, grade, img, address, note));
-        if(index != -1){
-            list.get(index).setName(name);
-            list.get(index).setGrade(grade);
-            list.get(index).setImg(img);
-            list.get(index).setAddress(address);
-            list.get(index).setNote(note);
-        }
-        else{
-            throw new IllegalArgumentException("Student does not exist");
+    public void editStudent(String id, String name, float grade, ImageIcon img, String address, String note, String idBefore){
+        for(int i = 0; i < list.size(); i++){
+            if(list.get(i).getId().equals(idBefore)){
+                list.get(i).setId(id);
+                list.get(i).setName(name);
+                list.get(i).setGrade(grade);
+                list.get(i).setImg(img);
+                list.get(i).setAddress(address);
+                list.get(i).setNote(note);
+            }
         }
     }
     public void deleteStudent(String id) {
@@ -87,6 +94,27 @@ public class StudentList {
         }
     }
 
+    public void sortByGrade(boolean increase){
+        for(int i = 0; i < list.size() - 1; i++){
+            for(int j = i + 1; j < list.size(); j++){
+                if(increase){
+                    if(list.get(i).getGrade() > list.get(j).getGrade()){
+                        Student temp = list.get(i);
+                        list.set(i, list.get(j));
+                        list.set(j, temp);
+                    }
+                }
+                else{
+                    if(list.get(i).getGrade() < list.get(j).getGrade()){
+                        Student temp = list.get(i);
+                        list.set(i, list.get(j));
+                        list.set(j, temp);
+                    }
+                }
+            }
+        }
+    }
+
 
     public Student[] getStudentList() {
         Student[] stuList = new Student[list.size()];
@@ -95,5 +123,20 @@ public class StudentList {
         }
         return stuList;
     }
+
+    public int getSize(){
+        return list.size();
+    }
+
+    public Student getStudent(int index){
+        return list.get(index);
+    }
+
+    public void printList(){
+        for(int i = 0; i < list.size(); i++){
+            System.out.println(list.get(i).getId() + " " + list.get(i).getName() + " " + list.get(i).getGrade() + " " + list.get(i).getAddress() + " " + list.get(i).getNote() + " " + list.get(i).getImg());
+        }
+    }
+
 
 }

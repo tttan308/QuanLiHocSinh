@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import static view.StudentTablePanel.stuList;
-import static view.StudentTablePanel.tableModel;
 
 public class MenuToolbarPanel {
     private JPanel menuToolbar;
@@ -16,6 +15,7 @@ public class MenuToolbarPanel {
     private Student student;
     private JLabel imageLabel = new JLabel();
     private ImageIcon imageFile = null;
+    private ImageIcon imageFileEdit = null;
     public MenuToolbarPanel(){
         menuToolbar = new JPanel();
         menuToolbar.setLayout(new BorderLayout());
@@ -50,7 +50,7 @@ public class MenuToolbarPanel {
             JFrame frame = new JFrame("Sửa học sinh");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.add(editStudentPanel(), BorderLayout.CENTER);
-            frame.setSize(700, 300);
+            frame.setSize(500, 80);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
@@ -59,13 +59,14 @@ public class MenuToolbarPanel {
             JFrame frame = new JFrame("Xóa học sinh");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.add(deleteStudentPanel(), BorderLayout.CENTER);
-            frame.setSize(500, 100);
+            frame.setSize(500, 80);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
 
         JMenu fileMenu = new JMenu("File");
         JMenuItem openMenuItem = new JMenuItem("Import File");
+
         JMenuItem saveMenuItem = new JMenuItem("Export File");
         fileMenu.add(openMenuItem);
         fileMenu.addSeparator();
@@ -91,15 +92,23 @@ public class MenuToolbarPanel {
         //Handle
         idSort1.addActionListener(e -> {
             stuList.sortById(true);
-            //reload table data
-            tableModel.fireTableDataChanged();
+            StudentTablePanel.reloadTable();
         });
 
         idSort2.addActionListener(e -> {
             stuList.sortById(false);
-            tableModel.fireTableDataChanged();
+            StudentTablePanel.reloadTable();
         });
 
+        gradeSort1.addActionListener(e -> {
+            stuList.sortByGrade(true);
+            StudentTablePanel.reloadTable();
+        });
+
+        gradeSort2.addActionListener(e -> {
+            stuList.sortByGrade(false);
+            StudentTablePanel.reloadTable();
+        });
     }
 
     public static JPanel getMenuToolbar(){
@@ -178,10 +187,10 @@ public class MenuToolbarPanel {
                 float grade = 0;
                 try{
                     grade = Float.parseFloat(gradeField.getText());
-                    System.out.println(grade);
                 }
                 catch (NumberFormatException ex){
-                    JOptionPane.showMessageDialog(null, "Điểm phải là số");
+                    JOptionPane.showMessageDialog(null, "Điểm phải là số.");
+                    return;
                 }
                 String address = addressField.getText();
                 String note = noteField.getText();
@@ -190,7 +199,8 @@ public class MenuToolbarPanel {
                 else
                     try{
                         stuList.addStudent(id, name, grade, imageFile, address, note);
-                        tableModel.addRow(new Object[]{id, name, grade, address, note, imageFile});
+                        stuList.printList();
+                        StudentTablePanel.reloadTable();
                         JOptionPane.showMessageDialog(null, "Thêm thành công");
                     }
                     catch (Exception ex){
@@ -226,6 +236,7 @@ public class MenuToolbarPanel {
         JLabel editLabel = new JLabel("Nhập mã học sinh cần sửa: ");
         JTextField editField = new JTextField(8);
         JButton edit = new JButton("Sửa");
+
         editPanel.add(editLabel);
         editPanel.add(editField);
         editPanel.add(edit);
@@ -235,122 +246,133 @@ public class MenuToolbarPanel {
             if(id.equals("")){
                 JOptionPane.showMessageDialog(null, "Vui lòng nhập mã học sinh");
             }
+            else if(stuList.checkExists(id) == false){
+                JOptionPane.showMessageDialog(null, "Mã học sinh không tồn tại");
+            }
             else{
-                try{
-                    Student student = stuList.getStudent(id);
-                    JFrame editFrame = new JFrame("Sửa thông tin học sinh");
-                    editFrame.setSize(500, 300);
-                    editFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                    editFrame.setLocationRelativeTo(null);
-                    editFrame.setVisible(true);
-                    editFrame.setLayout(new BorderLayout());
-                    JPanel editInputPanel = new JPanel(new GridBagLayout());
-                    GridBagConstraints gbc = new GridBagConstraints();
-                    gbc.insets = new Insets(5, 5, 5, 5);
-                    gbc.fill = GridBagConstraints.HORIZONTAL;
+                Student student = stuList.getStudent(id);
+                imageFileEdit = imageFile;
+                JFrame editFrame = new JFrame("Sửa thông tin học sinh");
+                editFrame.setSize(500, 300);
+                editFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                editFrame.setLocationRelativeTo(null);
+                editFrame.setVisible(true);
+                editFrame.setLayout(new BorderLayout());
+                JPanel editInputPanel = new JPanel(new GridBagLayout());
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.insets = new Insets(5, 5, 5, 5);
+                gbc.fill = GridBagConstraints.HORIZONTAL;
 
-                    JPanel idPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    idPanel.add(new JLabel("Mã học sinh: "));
-                    JTextField idField = new JTextField(8);
-                    idField.setText(student.getId());
-                    idPanel.add(idField);
-                    gbc.gridx = 0;
-                    gbc.gridy = 0;
-                    editInputPanel.add(idPanel, gbc);
+                JPanel idPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                idPanel.add(new JLabel("Mã học sinh: "));
+                JTextField idField = new JTextField(8);
+                idField.setText(student.getId());
+                idPanel.add(idField);
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                editInputPanel.add(idPanel, gbc);
 
-                    JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    namePanel.add(new JLabel("Tên học sinh: "));
-                    JTextField nameField = new JTextField(8);
-                    nameField.setText(student.getName());
-                    namePanel.add(nameField);
-                    gbc.gridx = 1;
-                    gbc.gridy = 0;
-                    editInputPanel.add(namePanel, gbc);
+                JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                namePanel.add(new JLabel("Tên học sinh: "));
+                JTextField nameField = new JTextField(8);
+                nameField.setText(student.getName());
+                namePanel.add(nameField);
+                gbc.gridx = 1;
+                gbc.gridy = 0;
+                editInputPanel.add(namePanel, gbc);
 
-                    JPanel gradePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    gradePanel.add(new JLabel("Điểm: "));
-                    JTextField gradeField = new JTextField(8);
-                    gradeField.setText(Float.toString(student.getGrade()));
-                    gradePanel.add(gradeField);
-                    gbc.gridx = 0;
-                    gbc.gridy = 1;
-                    editInputPanel.add(gradePanel, gbc);
+                JPanel gradePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                gradePanel.add(new JLabel("Điểm: "));
+                JTextField gradeField = new JTextField(8);
+                gradeField.setText(Float.toString(student.getGrade()));
+                gradePanel.add(gradeField);
+                gbc.gridx = 0;
+                gbc.gridy = 1;
+                editInputPanel.add(gradePanel, gbc);
 
-                    JPanel addressPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    addressPanel.add(new JLabel("Địa chỉ: "));
-                    JTextField addressField = new JTextField(8);
-                    addressField.setText(student.getAddress());
-                    addressPanel.add(addressField);
-                    gbc.gridx = 1;
-                    gbc.gridy = 1;
-                    editInputPanel.add(addressPanel, gbc);
+                JPanel addressPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                addressPanel.add(new JLabel("Địa chỉ: "));
+                JTextField addressField = new JTextField(8);
+                addressField.setText(student.getAddress());
+                addressPanel.add(addressField);
+                gbc.gridx = 1;
+                gbc.gridy = 1;
+                editInputPanel.add(addressPanel, gbc);
 
-                    JPanel notePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    notePanel.add(new JLabel("Ghi chú: "));
-                    JTextField noteField = new JTextField(8);
-                    noteField.setText(student.getNote());
-                    notePanel.add(noteField);
-                    gbc.gridx = 0;
-                    gbc.gridy = 2;
-                    editInputPanel.add(notePanel, gbc);
+                JPanel notePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                notePanel.add(new JLabel("Ghi chú: "));
+                JTextField noteField = new JTextField(8);
+                noteField.setText(student.getNote());
+                notePanel.add(noteField);
+                gbc.gridx = 0;
+                gbc.gridy = 2;
+                editInputPanel.add(notePanel, gbc);
 
-                    JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    imagePanel.add(new JLabel("Ảnh: "));
-                    JLabel imageLabel = new JLabel();
-                    imageLabel.setIcon(null);
-                    imagePanel.add(imageLabel);
-                    JButton addImageFile = new JButton("Thêm ảnh");
-                    imagePanel.add(addImageFile);
-                    gbc.gridx = 1;
-                    gbc.gridy = 2;
-                    editInputPanel.add(imagePanel, gbc);
+                JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                imagePanel.add(new JLabel("Ảnh: "));
+                JLabel imageLabel = new JLabel();
+                imageLabel.setIcon(null);
+                imagePanel.add(imageLabel);
+                JButton addImageFile = new JButton("Đổi ảnh");
+                imagePanel.add(addImageFile);
+                gbc.gridx = 1;
+                gbc.gridy = 2;
+                editInputPanel.add(imagePanel, gbc);
 
-                    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-                    JButton save = new JButton("Lưu");
-                    buttonPanel.add(save);
-                    gbc.gridx = 0;
-                    gbc.gridy = 3;
-                    gbc.gridwidth = 2;
-                    editInputPanel.add(buttonPanel, gbc);
+                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                JButton save = new JButton("Lưu");
+                buttonPanel.add(save);
+                gbc.gridx = 0;
+                gbc.gridy = 3;
+                gbc.gridwidth = 2;
+                editInputPanel.add(buttonPanel, gbc);
 
-                    editFrame.add(editInputPanel, BorderLayout.CENTER);
+                editFrame.add(editInputPanel, BorderLayout.CENTER);
+                save.addActionListener(ae -> {
+                    String id1 = idField.getText();
+                    String name = nameField.getText();
+                    String address = addressField.getText();
+                    String note = noteField.getText();
+                    float grade = 0;
+                    try{
+                        grade = Float.parseFloat(gradeField.getText());
+                    } catch (Exception ex){
+                        JOptionPane.showMessageDialog(null, "Điểm phải là số thực.");
+                        return;
+                    }
 
-                    save.addActionListener(ae -> {
-                        String id1 = idField.getText();
-                        String name = nameField.getText();
-                        String address = addressField.getText();
-                        String note = noteField.getText();
-                        float grade = 0;
-                        try{
-                            grade = Float.parseFloat(gradeField.getText());
-                        } catch (Exception ex){
-                            JOptionPane.showMessageDialog(null, "Điểm phải là số, không chứa kí tự khác.");
-                        }
-                        if(id1.equals("") || name.equals("") || address.equals("") || note.equals("") || gradeField.getText().equals(""))
-                            JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin.");
-                        else{
-                            stuList.editStudent(id1, name, grade, null, address, note);
-                            for(int i = 0; i < tableModel.getRowCount(); i++){
-                                if(tableModel.getValueAt(i, 0).equals(id)){
-                                    tableModel.setValueAt(id1, i, 0);
-                                    tableModel.setValueAt(name, i, 1);
-                                    tableModel.setValueAt(grade, i, 2);
-                                    tableModel.setValueAt(address, i, 3);
-                                    tableModel.setValueAt(note, i, 4);
-                                    break;
-                                }
-                            }
-                            editFrame.dispose();
-                        }
-                    });
-                } catch (Exception ex){
-                    JOptionPane.showMessageDialog(null, "Mã học sinh không tồn tại");
-                }
+                    if(id1.equals("") || name.equals("") || address.equals("") || note.equals("") || gradeField.getText().equals("")){
+                        JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin.");
+                    }
+                    else{
+                        stuList.editStudent(id1, name, grade,imageFileEdit, address, note, id);
+                        StudentTablePanel.reloadTable();
+                    }
+
+                    editFrame.dispose();
+                });
+
+                addImageFile.addActionListener(ex -> {
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.setDialogTitle("Chọn ảnh");
+                    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    int result = fileChooser.showOpenDialog(null);
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        File selectedFile = fileChooser.getSelectedFile();
+                        imageFileEdit = new ImageIcon(selectedFile.getPath());
+                        Image img = imageFileEdit.getImage();
+                        Image newImg = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                        imageFileEdit = new ImageIcon(newImg);
+                        imageLabel.setIcon(imageFileEdit);
+                        addImageFile.setText("Đổi ảnh");
+                    }
+                });
             }
 
         });
         return editPanel;
     }
+
     private JPanel deleteStudentPanel(){
         JPanel deletePanel = new JPanel();
         JLabel deleteLabel = new JLabel("Nhập mã học sinh cần xóa: ");
@@ -367,12 +389,7 @@ public class MenuToolbarPanel {
             else
                 try{
                     stuList.deleteStudent(id);
-                    for(int i = 0; i < tableModel.getRowCount(); i++){
-                        if(tableModel.getValueAt(i, 0).equals(id)){
-                            tableModel.removeRow(i);
-                            break;
-                        }
-                    }
+                    StudentTablePanel.reloadTable();
                     JOptionPane.showMessageDialog(null, "Xóa thành công");
                 }
                 catch (Exception ex){
