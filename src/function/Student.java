@@ -10,15 +10,6 @@ public class Student {
     private String address;
     private String note;
 
-    public Student(){
-        this.id = "";
-        this.name = "";
-        this.grade = 0;
-        this.img = null;
-        this.address = "";
-        this.note = "";
-    }
-
     public Student(String _MSH, String _name, float _grade, ImageIcon _img, String _address, String _note){
         this.id = _MSH;
         this.name = _name;

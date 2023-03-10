@@ -1,10 +1,6 @@
 package function;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class StudentList {
@@ -116,15 +112,6 @@ public class StudentList {
                 }
             }
         }
-    }
-
-
-    public Student[] getStudentList() {
-        Student[] stuList = new Student[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            stuList[i] = list.get(i);
-        }
-        return stuList;
     }
 
     public int getSize(){

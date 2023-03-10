@@ -3,6 +3,7 @@ import function.FileHandle;
 import function.Student;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -23,8 +24,8 @@ public class MenuToolbarPanel {
         menuToolbar.setLayout(new BorderLayout());
         JMenuBar toolbar = new JMenuBar();
 
-        toolbar.setBackground(new Color(224, 224, 224));
-        toolbar.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 20));
+        toolbar.setBackground(new Color(0xffffff));
+        toolbar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 25));
 
         JMenu functionMenu = new JMenu("Chức năng");
         JMenuItem addMenuItem = new JMenuItem("Thêm");
@@ -43,7 +44,8 @@ public class MenuToolbarPanel {
             JFrame frame = new JFrame("Thêm học sinh");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.add(inputNewStudentPanel(), BorderLayout.CENTER);
-            frame.setSize(700, 300);
+            frame.setSize(700, 200);
+            frame.setMinimumSize(new Dimension(700, 200));
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
@@ -82,16 +84,11 @@ public class MenuToolbarPanel {
             int userSelection = fileChooser.showOpenDialog(null);
             if(userSelection == JFileChooser.APPROVE_OPTION){
                 File fileToOpen = fileChooser.getSelectedFile();
-                try{
+
                     //clear stuList
                     stuList.clearStudentList();
                     stuList = FileHandle.importCSV(fileToOpen.getAbsolutePath());
                     StudentTablePanel.reloadTable();
-                }
-                catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "File không đúng định dạng!");
-                    throw new RuntimeException(ex);
-                }
             }
 
         });
@@ -152,6 +149,8 @@ public class MenuToolbarPanel {
     }
 
     private JPanel inputNewStudentPanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
         idField = new JTextField(8);
         nameField = new JTextField(20);
         gradeField = new JTextField(5);
@@ -202,19 +201,23 @@ public class MenuToolbarPanel {
 
         JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         imagePanel.add(new JLabel("Ảnh: "));
+        JLabel imageLabel = new JLabel();
+        imageLabel.setIcon(null);
+        imagePanel.add(imageLabel);
+        JButton addImageFile = new JButton("Đổi ảnh");
         imagePanel.add(addImageFile);
         gbc.gridx = 1;
         gbc.gridy = 2;
         inputPanel.add(imagePanel, gbc);
 
-        JPanel submitButton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panel.add(inputPanel, BorderLayout.PAGE_START);
+
+        JPanel submitPanel = new JPanel(new FlowLayout());
         submit = new JButton("Thêm");
-        submitButton.add(submit);
-        gbc.gridy = 3;
-        inputPanel.add(submitButton, gbc);
+        submitPanel.add(submit);
+        panel.add(submitPanel, BorderLayout.CENTER);
 
         //Handle
-
         submit.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -250,21 +253,27 @@ public class MenuToolbarPanel {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Chọn ảnh");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "gif", "jpeg");
+                fileChooser.setFileFilter(filter);
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 int result = fileChooser.showOpenDialog(null);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
+                    ImageIcon imageBeside = new ImageIcon(selectedFile.getPath());
                     imageFile = new ImageIcon(selectedFile.getPath());
+                    Image img1 = imageBeside.getImage();
                     Image img = imageFile.getImage();
-                    Image newImg = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                    imageFile = new ImageIcon(newImg);
-                    imageLabel.setIcon(imageFile);
+                    Image newImg = img.getScaledInstance(30, 40, Image.SCALE_SMOOTH);
+                    Image newImg1 = img1.getScaledInstance(90, 120, Image.SCALE_SMOOTH);
+                    imageFile = new ImageIcon(newImg1);
+                    imageBeside = new ImageIcon(newImg);
                     addImageFile.setText("Đổi ảnh");
+                    imageLabel.setIcon(imageBeside);
                 }
             }
         });
 
-        return inputPanel;
+        return panel;
     }
 
     private JPanel editStudentPanel(){
@@ -395,12 +404,15 @@ public class MenuToolbarPanel {
                     int result = fileChooser.showOpenDialog(null);
                     if (result == JFileChooser.APPROVE_OPTION) {
                         File selectedFile = fileChooser.getSelectedFile();
+                        ImageIcon iconBesideButton = new ImageIcon(selectedFile.getPath());
                         imageFileEdit = new ImageIcon(selectedFile.getPath());
-                        Image img = imageFileEdit.getImage();
-                        Image newImg = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                        imageFileEdit = new ImageIcon(newImg);
-                        imageLabel.setIcon(imageFileEdit);
+                        Image img = iconBesideButton.getImage();
+                        Image img2 = img.getScaledInstance(90, 120, Image.SCALE_SMOOTH);
+                        imageFileEdit = new ImageIcon(img2);
+                        Image newImg = img.getScaledInstance(30, 40, Image.SCALE_SMOOTH);
+                        iconBesideButton = new ImageIcon(newImg);
                         addImageFile.setText("Đổi ảnh");
+                        imageLabel.setIcon(iconBesideButton);
                     }
                 });
             }

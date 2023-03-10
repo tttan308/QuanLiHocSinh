@@ -7,22 +7,29 @@ public class MainFrame {
     private JPanel menuToolbar, studentTable, titleTable;
     public MainFrame(){
         menuToolbar = MenuToolbarPanel.getMenuToolbar();
-
         JLabel title = new JLabel("Danh sách học sinh");
-        title.setFont(new Font("Arial", Font.BOLD, 20));
+        title.setFont(new Font("Arial", Font.BOLD, 30));
         titleTable = new JPanel();
+        titleTable.setLayout(new FlowLayout());
         titleTable.add(title);
         titleTable.setPreferredSize(new Dimension(1000, 50));
-
         studentTable = StudentTablePanel.getStudentTablePanel();
+
 
         JFrame frame = new JFrame("Quản lý học sinh");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-        frame.add(menuToolbar);
-        frame.add(titleTable);
-        frame.add(studentTable);
+        JPanel appPanel = new JPanel();
+        appPanel.setLayout(new BorderLayout());
+        appPanel.add(menuToolbar, BorderLayout.PAGE_START);
+        JPanel tablePanel = new JPanel();
+        tablePanel.setLayout(new BorderLayout());
+        tablePanel.add(titleTable, BorderLayout.PAGE_START);
+        tablePanel.add(studentTable, BorderLayout.CENTER);
+        appPanel.add(tablePanel, BorderLayout.CENTER);
+        frame.add(appPanel);
         frame.setSize(1000, 500);
+        frame.setMinimumSize(new Dimension(320, 150));
+        frame.setBackground(Color.WHITE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

@@ -27,19 +27,21 @@ public class StudentTablePanel{
         };
 
         table = new JTable(tableModel);
+        //Lock dont edit table
+        table.setDefaultEditor(Object.class, null);
         table.setRowHeight(150);
         table.getColumnModel().getColumn(0).setPreferredWidth(80);
         table.getColumnModel().getColumn(1).setPreferredWidth(150);
         table.getColumnModel().getColumn(2).setPreferredWidth(50);
         table.getColumnModel().getColumn(3).setPreferredWidth(200);
         table.getColumnModel().getColumn(4).setPreferredWidth(200);
-        table.getColumnModel().getColumn(5).setPreferredWidth(200);
+        table.getColumnModel().getColumn(5).setPreferredWidth(100);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(0, 200, 880, 200);
+        scrollPane.setBounds(0, 200, 780, 200);
         studentTable.add(scrollPane, BorderLayout.CENTER);
     }
 
