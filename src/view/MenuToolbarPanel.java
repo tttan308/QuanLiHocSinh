@@ -15,22 +15,21 @@ public class MenuToolbarPanel {
     private JPanel menuToolbar;
     private JTextField idField, nameField, gradeField, addressField, noteField;
     JButton addImageFile, submit;
-    private Student student;
     private JLabel imageLabel = new JLabel();
     private ImageIcon imageFile = null;
     private ImageIcon imageFileEdit = null;
     public MenuToolbarPanel(){
         menuToolbar = new JPanel();
         menuToolbar.setLayout(new BorderLayout());
-        JMenuBar toolbar = new JMenuBar();
 
+        JMenuBar toolbar = new JMenuBar();
         toolbar.setBackground(new Color(0xffffff));
         toolbar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 25));
 
         JMenu functionMenu = new JMenu("Chức năng");
-        JMenuItem addMenuItem = new JMenuItem("Thêm");
-        JMenuItem editMenuItem = new JMenuItem("Sửa");
-        JMenuItem deleteMenuItem = new JMenuItem("Xóa");
+        JMenuItem addMenuItem = new JMenuItem("Thêm học sinh");
+        JMenuItem editMenuItem = new JMenuItem("Sửa thông tin học sinh");
+        JMenuItem deleteMenuItem = new JMenuItem("Xóa học sinh");
         functionMenu.add(addMenuItem);
         functionMenu.addSeparator();
         functionMenu.add(editMenuItem);
@@ -38,32 +37,33 @@ public class MenuToolbarPanel {
         functionMenu.add(deleteMenuItem);
         toolbar.add(functionMenu);
 
-        //Handle open button action
-        //Create a window input dialog when click addMenuItem
         addMenuItem.addActionListener(e -> {
             JFrame frame = new JFrame("Thêm học sinh");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(inputNewStudentPanel(), BorderLayout.CENTER);
+            frame.setLayout(new FlowLayout());
+            frame.add(inputNewStudentPanel());
             frame.setSize(700, 200);
-            frame.setMinimumSize(new Dimension(700, 200));
+            frame.setMinimumSize(new Dimension(700, 220));
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
 
         editMenuItem.addActionListener(e -> {
             JFrame frame = new JFrame("Sửa học sinh");
+            frame.setLayout(new FlowLayout());
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(editStudentPanel(), BorderLayout.CENTER);
-            frame.setSize(500, 80);
+            frame.add(editStudentPanel());
+            frame.setSize(450, 80);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
 
         deleteMenuItem.addActionListener(e -> {
             JFrame frame = new JFrame("Xóa học sinh");
+            frame.setLayout(new FlowLayout());
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.add(deleteStudentPanel(), BorderLayout.CENTER);
-            frame.setSize(500, 80);
+            frame.add(deleteStudentPanel());
+            frame.setSize(450, 80);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
@@ -80,15 +80,21 @@ public class MenuToolbarPanel {
         openMenuItem.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Chọn file");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV", "csv");
+            fileChooser.setFileFilter(filter);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             int userSelection = fileChooser.showOpenDialog(null);
             if(userSelection == JFileChooser.APPROVE_OPTION){
                 File fileToOpen = fileChooser.getSelectedFile();
-
-                    //clear stuList
-                    stuList.clearStudentList();
-                    stuList = FileHandle.importCSV(fileToOpen.getAbsolutePath());
-                    StudentTablePanel.reloadTable();
+                stuList.clearStudentList();
+                try {
+                    FileHandle.importCSV(fileToOpen.getAbsolutePath());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "File bị lỗi");
+                    throw new RuntimeException(ex);
+                }
+                stuList = FileHandle.importCSV(fileToOpen.getAbsolutePath());
+                StudentTablePanel.reloadTable();
             }
 
         });
@@ -101,7 +107,7 @@ public class MenuToolbarPanel {
                 try {
                     FileHandle.exportCSV(fileToSave.getAbsolutePath() + ".csv", stuList);
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Tên file đã tồn tại!");
+                    JOptionPane.showMessageDialog(null, "File bị lỗi");
                     throw new RuntimeException(ex);
                 }
             }
@@ -204,7 +210,7 @@ public class MenuToolbarPanel {
         JLabel imageLabel = new JLabel();
         imageLabel.setIcon(null);
         imagePanel.add(imageLabel);
-        JButton addImageFile = new JButton("Đổi ảnh");
+        JButton addImageFile = new JButton("Thêm ảnh");
         imagePanel.add(addImageFile);
         gbc.gridx = 1;
         gbc.gridy = 2;
@@ -231,6 +237,10 @@ public class MenuToolbarPanel {
                     JOptionPane.showMessageDialog(null, "Điểm phải là số.");
                     return;
                 }
+                if(grade < 0 || grade > 10){
+                    JOptionPane.showMessageDialog(null, "Điểm phải nằm trong khoảng 0 - 10");
+                    return;
+                }
                 String address = addressField.getText();
                 String note = noteField.getText();
                 if(id.equals("") || name.equals("") || gradeField.getText().equals("") || address.equals("") || note.equals("") || imageFile.equals(null))
@@ -240,7 +250,7 @@ public class MenuToolbarPanel {
                         stuList.addStudent(id, name, grade, imageFile, address, note);
                         stuList.printList();
                         StudentTablePanel.reloadTable();
-                        JOptionPane.showMessageDialog(null, "Thêm thành công");
+                        JOptionPane.showMessageDialog(null, "Thêm học sinh thành công");
                     }
                     catch (Exception ex){
                         JOptionPane.showMessageDialog(null, "Mã học sinh đã tồn tại");
@@ -297,8 +307,11 @@ public class MenuToolbarPanel {
             else{
                 Student student = stuList.getStudent(id);
                 imageFileEdit = imageFile;
+                JPanel panel = new JPanel();
+                panel.setLayout(new BorderLayout());
+
                 JFrame editFrame = new JFrame("Sửa thông tin học sinh");
-                editFrame.setSize(500, 300);
+                editFrame.setSize(500, 220);
                 editFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 editFrame.setLocationRelativeTo(null);
                 editFrame.setVisible(true);
@@ -363,16 +376,14 @@ public class MenuToolbarPanel {
                 gbc.gridx = 1;
                 gbc.gridy = 2;
                 editInputPanel.add(imagePanel, gbc);
+                panel.add(editInputPanel, BorderLayout.PAGE_START);
 
-                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                JPanel buttonPanel = new JPanel(new FlowLayout());
                 JButton save = new JButton("Lưu");
                 buttonPanel.add(save);
-                gbc.gridx = 0;
-                gbc.gridy = 3;
-                gbc.gridwidth = 2;
-                editInputPanel.add(buttonPanel, gbc);
+                panel.add(buttonPanel, BorderLayout.CENTER);
 
-                editFrame.add(editInputPanel, BorderLayout.CENTER);
+                editFrame.add(panel);
                 save.addActionListener(ae -> {
                     String id1 = idField.getText();
                     String name = nameField.getText();
@@ -386,12 +397,23 @@ public class MenuToolbarPanel {
                         return;
                     }
 
+                    if(grade < 0 || grade > 10){
+                        JOptionPane.showMessageDialog(null, "Điểm phải nằm trong khoảng 0 - 10.");
+                        return;
+                    }
+
+                    if(stuList.checkExists(id1) && !id1.equals(id)){
+                        JOptionPane.showMessageDialog(null, "Mã học sinh đã tồn tại.");
+                        return;
+                    }
+
                     if(id1.equals("") || name.equals("") || address.equals("") || note.equals("") || gradeField.getText().equals("")){
                         JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin.");
                     }
                     else{
                         stuList.editStudent(id1, name, grade,imageFileEdit, address, note, id);
                         StudentTablePanel.reloadTable();
+                        JOptionPane.showMessageDialog(null, "Sửa thông tin học sinh thành công");
                     }
 
                     editFrame.dispose();
@@ -400,6 +422,8 @@ public class MenuToolbarPanel {
                 addImageFile.addActionListener(ex -> {
                     JFileChooser fileChooser = new JFileChooser();
                     fileChooser.setDialogTitle("Chọn ảnh");
+                    FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "gif", "jpeg");
+                    fileChooser.setFileFilter(filter);
                     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                     int result = fileChooser.showOpenDialog(null);
                     if (result == JFileChooser.APPROVE_OPTION) {

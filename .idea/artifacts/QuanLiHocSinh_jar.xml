@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="QuanLiHocSinh:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/QuanLiHocSinh_jar</output-path>
+    <root id="archive" name="QuanLiHocSinh.jar">
+      <element id="module-output" name="QuanLiHocSinh" />
+    </root>
+  </artifact>
+</component>

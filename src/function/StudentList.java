@@ -27,14 +27,6 @@ public class StudentList {
         }
         return false;
     }
-    public void addStudent(Student stu) {
-        if (checkExists(stu) == -1) {
-            list.add(stu);
-        }
-        else {
-            System.out.println("Student already exists");
-        }
-    }
 
     public void addStudent(String id, String name, float grade, ImageIcon img, String address, String note){
         if(checkExists(new Student(id, name, grade, img, address, note)) != -1){
@@ -56,6 +48,9 @@ public class StudentList {
         }
     }
     public void deleteStudent(String id) {
+        if(checkExists(id) != true){
+            throw new IllegalArgumentException("Học sinh đã tồn tại");
+        }
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getId().equals(id)) {
                 list.remove(i);

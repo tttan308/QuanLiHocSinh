@@ -3,7 +3,6 @@ package view;
 import function.StudentList;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
@@ -27,7 +26,6 @@ public class StudentTablePanel{
         };
 
         table = new JTable(tableModel);
-        //Lock dont edit table
         table.setDefaultEditor(Object.class, null);
         table.setRowHeight(150);
         table.getColumnModel().getColumn(0).setPreferredWidth(80);
@@ -36,9 +34,6 @@ public class StudentTablePanel{
         table.getColumnModel().getColumn(3).setPreferredWidth(200);
         table.getColumnModel().getColumn(4).setPreferredWidth(200);
         table.getColumnModel().getColumn(5).setPreferredWidth(100);
-
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(0, 200, 780, 200);
